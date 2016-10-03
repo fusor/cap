@@ -1,0 +1,103 @@
+#This is a hypothetical change to the nulecule spec that may 
+#address some of the shortcomings when it comes to the cap
+#project.
+---
+specversion: 0.0.3
+id: mediawiki-atomicapp
+
+metadata:
+  name: mediawiki
+  appversion: 2.0.0
+  description: Simple mediawiki atomic app. Uses remote mysql atomic app.
+  location: docker.io/projectatomic/mediawiki-centos7-atomicapp
+
+params:                                                                    < use params section for all parameters?
+    - name: provider
+      description: The specified default provider.
+      default: kubernetes
+
+    - name: image
+      description:  mediawiki image
+      default: mediawiki
+      type: string                                                         < add type (boolean, integer, string, etc. so we  
+                                                                             can more easily do some basic validation
+    - name: db_user
+      maps:
+        - db::postgres-centos7-atomicapp::db_user
+        - db::mariadb-centos7-atomicapp::db_user                           < if a parameter needs to match a parameter for 
+      description: username for database                                     a nulecule in the graph, tie it together so it
+      type: string                                                           only needs to be filled in once
+
+    - name: db_pass
+      description:  password for db_user
+      type: string
+      maps:
+        - db::psotgres-centos7-atomicapp::db_pass
+        - db::mariadb-centos7-atomicapp::db_pass
+    - name: db_name
+      maps:
+        - db::psotgres-centos7-atomicapp::db_name
+        - db::mariadb-centos7-atomicapp::db_name
+      description: database name
+      type: string 
+
+    - name: hostport
+      description: port for port mapping
+      default: 8888
+      type: int
+      providers:                                                           < specify provider specific params so we know not to 
+        - docker                                                             bother with it if using kubernetes or openshift.
+        - marathon
+
+    - name: cache_type
+      description: cache type to be used
+      default: CACHE_NONE
+      user_defined: false                                                  < don't allow the user to modify this
+      type: string
+
+    - name: db_host
+      description: database host
+      default: mariadb:3306
+      type: string
+      user_defined: false  
+
+    - name: cache_host
+      description: host to use for cache
+      default: memcache:11211
+      user_defined: false
+      type: string
+
+graph:
+  required:                                                                 < add a section for required containers. 
+    db:                                                                     < add a class of container. Among the 
+      - name: mariadb-centos7-atomicapp                                       choices within each class one would be required.
+      source: docker://projectatomic/mariadb-centos7-atomicapp
+      default: true                                                         < add a default? may be useful for running with less input
+      allow: 1                                                              < how many to allow 1, 2, unlimited... (future use)
+      param_override:                                                       < let selection of this option override a parameter
+        - db_host: mariadb:3306  
+      - name: postgres-centos7-atomicapp                                              
+      source: docker://projectatomic/postgres-centos7-atomicapp                       
+      allow: 1                                                                        
+      param_override:
+        - db_host: postgres:5342
+  optional:                                                                 < add a section for optional containers.
+    cache:
+      - name: memcache-centos7-atomicapp
+      source: docker://projectatomic/memcache-centos7-atomicapp
+      allow: 1
+      param_override:
+        - cache_type: CACHE_MEMCACHED
+        - cache_host: memcache:11211
+artifacts:
+  kubernetes:
+    - file://artifacts/kubernetes/mediawiki-pod.yaml
+    - file://artifacts/kubernetes/mediawiki-service.yaml
+  openshift:
+    - file://artifacts/openshift/volume.yaml
+    - file://artifacts/openshift/service.yaml
+    - file://artifacts/openshift/pod.yaml
+  docker:
+    - file://artifacts/docker/mediawiki-run
+  marathon:
+    - file://artifacts/marathon/mediawiki.json
