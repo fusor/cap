@@ -18,55 +18,56 @@ A Vagrant virtual environment is provided based on the Red Hat Container Develop
  1. Download and install the vagrant base box, must be installed as 'cdkv2' as per CDK instructions.
   - Download base box from https://access.redhat.com/downloads/content/293/
   - Add box, example for virtualbox:
-     - $ vagrant box add --name cdkv2 ~/Downloads/rhel-cdk-kubernetes-7.2.x86_64.vagrant-virtualbox.box*
-
- 1. ```vagrant plugin install vagrant-service-manager vagrant-registration vagrant-sshfs landrush```
+     - `vagrant box add --name cdkv2 ~/Downloads/rhel-cdk-kubernetes-7.2.x86_64.vagrant-virtualbox.box*`
+ 1. Checkout dependent projects on peer with 'fusor/cap'
+  - `git clone https://github.com/fusor/cap-ui.git`
+  - `git clone https://github.com/fusor/cap-server.git`
+ 1. Install the required vagrant plugins
+  - `vagrant plugin install vagrant-service-manager vagrant-registration vagrant-sshfs landrush`
  1. Define environment variables for subscription-manager
   - export SUB_USERNAME=name
   - export SUB_PASSWORD=password
- 1. vagrant up
- 1. vagrant ssh
-  - cd /vagrant
-  - ./start_dev_api.sh
- 1. vagrant ssh (another terminal)
-  - cd /vagrant
-  - npm start
+ 1. `vagrant up`
  1. visit: http://cap.example.com:3000
+   - a tmux session is running on the VM which contains the development servers for go & react
+     1. `vagrant ssh`
+     1. `tmux attach-session -t dev`
 
 
 ### Dependencies
 
-python 2.7.12 and pip
-
-node & npm (tested in 6.5.0)
-
-working (and running) docker install where the $USER belongs to the docker group
-so we won't end up with permissioning issues.
+Git Projects:
+ - https://github.com/fusor/cap-ui
+ - https://github.com/fusor/cap-server
 
 ### Servers
 
-Project uses 2 servers, one that's scrictly a dev api server for exposing
+Project uses 2 servers, one that's strictly a dev api server for exposing
 nulecule data to the client. The second is the react dev server. It's a simple
 node server with some niceties for building and serving the react application
 and auto reloading react components, in browser errors etc.
 
-These are two distinct servers running on two separate ports.
-3000 for the react app and 3001 for the api server.
+These are two distinct services running on two separate ports.
+  - 3000 for the react app (fusor/cap-ui)
+  - 3001 for the api server written in Go (fusor/cap-server)
 
-To get started, install the dependencies with `install_dependencies.sh` script.
 
-Start dev_api with `./start_dev_api.sh`, should launch on `127.0.0.1:3001`
+##### Running the server processes
 
-Test to make sure it's working: `curl http://localhost:3001/nulecules`
+A tmux session is configured by default to automatically run both the react and go servers.
 
-New terminal, start up the react dev server, it will take a bit to build the application
-initially, and each time a react change is made, the server will rebuild
-and load into the browser without requiring page refreshes.
+To attach to the tmux session:  
+  - `tmux attach-session -t dev`
+    - This tmux session is created by the script: `/vagrant/setup/run_dev_servers_in_tmux.sh`
 
-`npm start`
+To test the backend Go services is working:
 
-Visit `http://localhost:3000`, which should list the available nulecules
-in the checked in dummy nulecule repo.
+ - `curl http://cap.example.com:3001/nulecules`
+
+To test the frontend React service is up:
+
+ - visit http://cap.example.com:3000
+
 
 ## Extra Reading Information
 
