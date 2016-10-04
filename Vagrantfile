@@ -35,8 +35,24 @@ unless missing_vars.empty?
 end
 
 PROJECTS_GIT_HOME= File.expand_path "../"
+##
+# These are _golang_ projects that need to be shared into the VM at the $GOPATH/src
+##
+GO_REQUIRED_PATHS = {
+    "github.com/fusor/cap-server" => "#{PROJECTS_GIT_HOME}/cap-server"
+}
+GO_REQUIRED_PATHS.each do |name, p|
+  if !Dir.exists?(p)
+    puts "Unable to find a required git clone for #{name} at #{p}"
+    exit
+  end
+end
+
+##
+# Non-go related projects we need shared into the VM go here
+##
 REQUIRED_PATHS = {
-    "github.com/jmrodri/cap-go" => "#{PROJECTS_GIT_HOME}/cap-go"
+    "github.com/fusor/cap-ui" => "#{PROJECTS_GIT_HOME}/cap-ui"
 }
 REQUIRED_PATHS.each do |name, p|
   if !Dir.exists?(p)
@@ -92,6 +108,12 @@ Vagrant.configure(2) do |config|
   config.vm.synced_folder '.', '/vagrant', type: 'sshfs', sshfs_opts_append: '-o umask=000 -o uid=1000 -o gid=1000'
 
   REQUIRED_PATHS.each do |name, p|
+    basename = File.basename(name)
+    config.vm.synced_folder p, "/home/vagrant/#{basename}", type: 'sshfs', sshfs_opts_append: '-o umask=000 -o uid=1000 -o gid=1000'
+  end
+
+  # These paths will be under the $GOPATH on the VM
+  GO_REQUIRED_PATHS.each do |name, p|
     config.vm.synced_folder p, "/home/vagrant/src/#{name}", type: 'sshfs', sshfs_opts_append: '-o umask=000 -o uid=1000 -o gid=1000'
   end
 

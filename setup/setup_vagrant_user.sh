@@ -25,7 +25,7 @@ if [ "$?" -ne "0" ]; then
     exit
 fi
 
-cd /vagrant
+cd /home/vagrant/cap-ui
 # Be aware of an issue of npm install on virtualbox and their sharedfold implementation
 # I've seen occasional problems replace "npm install" with "npm install --no-bin-links" has helped
 # https://github.com/npm/npm/issues/992#issuecomment-223479918

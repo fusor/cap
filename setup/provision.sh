@@ -43,7 +43,3 @@ yum install -y atomicapp
 if [ "$?" -ne "0" ]; then
     exit
 fi
-#pip install -r /vagrant/pip_requirements.txt
-#if [ "$?" -ne "0" ]; then
-#    exit
-#fi
