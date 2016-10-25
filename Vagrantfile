@@ -177,7 +177,7 @@ Vagrant.configure(2) do |config|
       echo "tmux is running go api server"
       echo "tmux attach-session -t dev"
       echo ""
-      echo "Visit:  http://cap.example.com:3000"
+      echo "React dev server:  http://cap.example.com:3000"
       echo ""
       echo
     SHELL
@@ -187,7 +187,7 @@ Vagrant.configure(2) do |config|
       echo "tmux is running react & go applications"
       echo "tmux attach-session -t dev"
       echo ""
-      echo "Visit:  http://cap.example.com:3000"
+      echo "Visit:  http://cap.example.com:3001"
       echo ""
       echo
     SHELL
