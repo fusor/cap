@@ -24,8 +24,6 @@ gcc
 # golang bits
 golang
 golang-vim
-
-atomicapp # TODO: remove this once we switch over to all atomic
 )
 
 ###################################################################
