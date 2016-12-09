@@ -21,9 +21,7 @@ python-pip
 python-devel
 gcc
 
-# golang bits
-golang
-golang-vim
+jq # catalog search dependency
 )
 
 ###################################################################
@@ -57,6 +55,10 @@ rpm -Uvh https://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-8.noarc
 if [ "$?" -ne "0" ]; then
     exit
 fi
+
+# Install specific golang version not available in repos
+curl "https://storage.googleapis.com/golang/go1.7.4.linux-amd64.tar.gz" > /tmp/golang.tar.gz && \
+  tar -C /usr/local -xzf /tmp/golang.tar.gz
 
 #
 # Install the defined packages

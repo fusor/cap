@@ -5,7 +5,7 @@ cd ~
 mkdir -p {src,bin,pkg}
 
 echo "export GOPATH=$HOME" >> ~/.bashrc
-echo "export PATH=\$PATH:\$GOPATH/bin" >> ~/.bashrc
+echo "export PATH=\$PATH:/usr/local/go/bin:\$GOPATH/bin" >> ~/.bashrc
 
 sudo chown -R vagrant:vagrant /home/vagrant/src
 
